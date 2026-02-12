@@ -121,15 +121,18 @@ function nsInitExternalLinks() {
 }
 
 /* ============================================================
-   STUDY WITH ME — Music Player
+   STUDY WITH ME — Music Player (Ad-Free Radio Streams)
+   ============================================================
+   Sử dụng các kênh radio trực tuyến không quảng cáo.
+   Nguồn: Lofi Girl Radio, Chillhop, SomaFM (royalty-free).
    ============================================================ */
 
 const NS_MUSIC_TRACKS = [
-    { title: 'Lofi Study Beats', src: 'https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&loop=1', type: 'youtube', color: '#7c5cfc' },
-    { title: 'Chill Piano Jazz', src: 'https://www.youtube.com/embed/HSOtku1j600?autoplay=1&loop=1', type: 'youtube', color: '#38bdf8' },
-    { title: 'Rain & Coffee Shop', src: 'https://www.youtube.com/embed/c0_ejQQcrwI?autoplay=1&loop=1', type: 'youtube', color: '#34d399' },
-    { title: 'Focus Flow (No Lyrics)', src: 'https://www.youtube.com/embed/TURbeWK2wwg?autoplay=1&loop=1', type: 'youtube', color: '#fb923c' },
-    { title: 'Midnight City Vibes', src: 'https://www.youtube.com/embed/rPjez8z61rI?autoplay=1&loop=1', type: 'youtube', color: '#f472b6' },
+    { title: 'Lofi Girl Radio', src: 'https://play.streamafrica.net/lofiradio', type: 'audio', color: '#7c5cfc' },
+    { title: 'Chillhop Radio', src: 'https://streams.fluxfm.de/Chillhop/mp3-320/streams.fluxfm.de/', type: 'audio', color: '#38bdf8' },
+    { title: 'SomaFM Groove Salad', src: 'https://ice1.somafm.com/groovesalad-256-mp3', type: 'audio', color: '#34d399' },
+    { title: 'SomaFM Drone Zone', src: 'https://ice1.somafm.com/dronezone-256-mp3', type: 'audio', color: '#fb923c' },
+    { title: 'Jazz Radio', src: 'https://jazz-wr04.ice.infomaniak.ch/jazz-wr04-128.mp3', type: 'audio', color: '#f472b6' },
 ];
 
 let nsMusicCurrentTrack = 0;
@@ -137,8 +140,16 @@ let nsMusicPlaying = false;
 let nsMusicPlayerEl = null;
 let nsMusicIframe = null;
 
+// Hidden audio element for ad-free playback
+let nsMusicAudio = null;
+
 function nsCreateMusicPlayer() {
     if (document.querySelector('.ns-music-player')) return;
+
+    // Create audio element (replaces iframe)
+    nsMusicAudio = new Audio();
+    nsMusicAudio.volume = 0.5;
+    nsMusicAudio.crossOrigin = 'anonymous';
 
     const player = document.createElement('div');
     player.className = 'ns-music-player collapsed no-print';
@@ -176,7 +187,6 @@ function nsCreateMusicPlayer() {
                     <input type="range" class="volume-slider" min="0" max="100" value="50" oninput="nsMusicSetVolume(this.value)">
                     <i class="ph-fill ph-speaker-high" style="font-size:14px;color:#94a3b8"></i>
                 </div>
-                <iframe id="ns-music-iframe" style="width:0;height:0;border:none;position:absolute;top:-9999px" allow="autoplay"></iframe>
             </div>
         </div>
     `;
@@ -215,20 +225,21 @@ function nsMusicTogglePlay() {
 
 function nsMusicPlay() {
     const track = NS_MUSIC_TRACKS[nsMusicCurrentTrack];
-    const iframe = document.getElementById('ns-music-iframe');
     const playBtn = document.getElementById('ns-music-play');
     const eq = nsMusicPlayerEl?.querySelector('.ns-eq');
-    if (iframe && track.type === 'youtube') { iframe.src = track.src; }
+    if (nsMusicAudio) {
+        nsMusicAudio.src = track.src;
+        nsMusicAudio.play().catch(() => { /* autoplay blocked */ });
+    }
     if (playBtn) playBtn.innerHTML = '<i class="ph-fill ph-pause"></i>';
     if (eq) eq.style.display = 'flex';
     nsMusicPlaying = true;
 }
 
 function nsMusicStop() {
-    const iframe = document.getElementById('ns-music-iframe');
     const playBtn = document.getElementById('ns-music-play');
     const eq = nsMusicPlayerEl?.querySelector('.ns-eq');
-    if (iframe) iframe.src = '';
+    if (nsMusicAudio) { nsMusicAudio.pause(); nsMusicAudio.src = ''; }
     if (playBtn) playBtn.innerHTML = '<i class="ph-fill ph-play"></i>';
     if (eq) eq.style.display = 'none';
     nsMusicPlaying = false;
@@ -247,14 +258,7 @@ function nsMusicPrev() {
 }
 
 function nsMusicSetVolume(val) {
-    const iframe = document.getElementById('ns-music-iframe');
-    if (iframe && iframe.contentWindow) {
-        try {
-            iframe.contentWindow.postMessage(JSON.stringify({
-                event: 'command', func: 'setVolume', args: [val]
-            }), '*');
-        } catch (e) { /* cross-origin */ }
-    }
+    if (nsMusicAudio) nsMusicAudio.volume = val / 100;
 }
 
 /* ============================================================
@@ -443,13 +447,13 @@ async function nsChatbotAsk(userMessage) {
     // Add to conversation history
     nsChatHistory.push({ role: 'user', parts });
 
-    // Keep last 20 turns to avoid token overflow
-    if (nsChatHistory.length > 20) {
-        nsChatHistory = nsChatHistory.slice(-20);
+    // Keep last 10 turns for speed (less tokens = faster response)
+    if (nsChatHistory.length > 10) {
+        nsChatHistory = nsChatHistory.slice(-10);
     }
 
-    // Make API request
-    const url = `${NS_GEMINI_ENDPOINT}${NS_GEMINI_MODEL}:generateContent?key=${apiInfo.key}`;
+    // Make API request with streaming for faster perceived speed
+    const url = `${NS_GEMINI_ENDPOINT}${NS_GEMINI_MODEL}:streamGenerateContent?alt=sse&key=${apiInfo.key}`;
 
     try {
         const response = await fetch(url, {
@@ -462,7 +466,7 @@ async function nsChatbotAsk(userMessage) {
                     temperature: 0.7,
                     topP: 0.9,
                     topK: 40,
-                    maxOutputTokens: 2048,
+                    maxOutputTokens: 1500,
                 },
                 safetySettings: [
                     { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_ONLY_HIGH' },
@@ -487,20 +491,44 @@ async function nsChatbotAsk(userMessage) {
             return `❌ **Lỗi API (${status}):**\n${errMsg || 'Không xác định'}\n\n*Nhấn ⚙️ để kiểm tra API key.*`;
         }
 
-        const data = await response.json();
-        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        // Stream response for faster display
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let fullText = '';
+        const streamCallback = window._nsChatStreamCallback;
 
-        if (!text) {
-            nsChatHistory.pop();
-            if (data?.candidates?.[0]?.finishReason === 'SAFETY') {
-                return '⚠️ Câu trả lời bị chặn bởi bộ lọc an toàn. Vui lòng thử câu hỏi khác!';
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            const chunk = decoder.decode(value, { stream: true });
+            // Parse SSE events
+            const lines = chunk.split('\n');
+            for (const line of lines) {
+                if (line.startsWith('data: ')) {
+                    try {
+                        const json = JSON.parse(line.slice(6));
+                        const part = json?.candidates?.[0]?.content?.parts?.[0]?.text;
+                        if (part) {
+                            fullText += part;
+                            if (streamCallback) streamCallback(fullText);
+                        }
+                        if (json?.candidates?.[0]?.finishReason === 'SAFETY') {
+                            nsChatHistory.pop();
+                            return '⚠️ Câu trả lời bị chặn bởi bộ lọc an toàn. Vui lòng thử câu hỏi khác!';
+                        }
+                    } catch (e) { /* skip invalid JSON */ }
+                }
             }
+        }
+
+        if (!fullText) {
+            nsChatHistory.pop();
             return '⚠️ Không nhận được phản hồi từ AI. Vui lòng thử lại!';
         }
 
         // Add assistant reply to history
-        nsChatHistory.push({ role: 'model', parts: [{ text }] });
-        return text;
+        nsChatHistory.push({ role: 'model', parts: [{ text: fullText }] });
+        return fullText;
 
     } catch (err) {
         nsChatHistory.pop();
