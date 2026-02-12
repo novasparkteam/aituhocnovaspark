@@ -560,9 +560,16 @@
             if (!q) return;
             inp.value = '';
             container.classList.remove('hidden');
-            res.innerHTML = '<div style="text-align:right;margin-bottom:12px"><span style="background:#7c5cfc;color:white;padding:6px 14px;border-radius:16px 16px 4px 16px;font-size:13px;display:inline-block;max-width:80%">' + q.replace(/</g, '&lt;') + '</span></div><div><i class="ph-bold ph-circle-notch animate-spin text-ns-purple"></i> Đang suy nghĩ...</div>';
+            const qB = '<div style="text-align:right;margin-bottom:12px"><span style="background:#7c5cfc;color:white;padding:6px 14px;border-radius:16px 16px 4px 16px;font-size:13px;display:inline-block;max-width:80%">' + q.replace(/</g, '&lt;') + '</span></div>';
+            res.innerHTML = qB + '<div><i class="ph-bold ph-circle-notch animate-spin text-ns-purple"></i> Đang suy nghĩ...</div>';
+            // Stream callback: update response in real-time
+            window._nsChatStreamCallback = (partial) => {
+                res.innerHTML = qB + '<div style="background:#f3f0ff;color:#1e1b2e;padding:12px 16px;border-radius:4px 16px 16px 16px">' + nsRenderMd(partial) + '<span class="animate-pulse" style="color:#7c5cfc">▌</span></div>';
+                res.scrollTop = res.scrollHeight;
+            };
             const text = await nsChatbotAsk(q);
-            res.innerHTML = '<div style="text-align:right;margin-bottom:12px"><span style="background:#7c5cfc;color:white;padding:6px 14px;border-radius:16px 16px 4px 16px;font-size:13px;display:inline-block;max-width:80%">' + q.replace(/</g, '&lt;') + '</span></div><div class="dark:bg-slate-800/50" style="background:#f3f0ff;padding:12px 16px;border-radius:4px 16px 16px 16px">' + nsRenderMd(text) + '</div>';
+            window._nsChatStreamCallback = null;
+            res.innerHTML = qB + '<div style="background:#f3f0ff;color:#1e1b2e;padding:12px 16px;border-radius:4px 16px 16px 16px">' + nsRenderMd(text) + '</div>';
             res.scrollTop = res.scrollHeight;
         }
         document.getElementById('ai-input').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); askAI() } });
