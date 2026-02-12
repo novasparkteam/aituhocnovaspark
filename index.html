@@ -545,8 +545,8 @@
                 .replace(/\*\*(.*?)\*\*/g, '<strong class="text-ns-purple font-black">$1</strong>')
                 .replace(/\*(.*?)\*/g, '<em>$1</em>')
                 .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" class="text-ns-purple underline font-bold">$1</a>')
-                .replace(/^### (.+)$/gm, '<h4 class="font-black text-sm mt-3 mb-1 dark:text-white">$1</h4>')
-                .replace(/^## (.+)$/gm, '<h3 class="font-black text-base mt-3 mb-1 dark:text-white">$1</h3>')
+                .replace(/^### (.+)$/gm, '<h4 class="font-black text-sm mt-3 mb-1 text-slate-800">$1</h4>')
+                .replace(/^## (.+)$/gm, '<h3 class="font-black text-base mt-3 mb-1 text-slate-800">$1</h3>')
                 .replace(/^- (.+)$/gm, '<div style="padding-left:12px">&bull; $1</div>')
                 .replace(/\n/g, '<br>');
         }
