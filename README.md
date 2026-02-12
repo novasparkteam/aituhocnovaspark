@@ -111,7 +111,7 @@ Mở link website được cung cấp bằng trình duyệt (Chrome, Edge, Firef
 
 ### Bước 1: Clone mã nguồn
 ```bash
-git clone https://github.com/<username>/aituhocnovaspark.git
+git clone https://github.com/novasparkteam/aituhocnovaspark.git
 cd aituhocnovaspark
 ```
 
