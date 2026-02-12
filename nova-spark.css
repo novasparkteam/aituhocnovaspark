@@ -1,0 +1,452 @@
+/* ============================================================
+   NOVA SPARK — Shared Design System
+   ============================================================ */
+
+/* ---------- Base Reset & Typography ---------- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box
+}
+
+body {
+    margin: 0;
+    font-family: 'Quicksand', sans-serif;
+    background-color: #FAFAFA;
+    color: #5A4A4A;
+    transition: background-color .5s ease, color .5s ease;
+    -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: #7c5cfc transparent;
+    font-size: 16px;
+    /* Accessibility baseline */
+}
+
+html.dark body {
+    background-color: #0f172a;
+    color: #F3F4F6
+}
+
+/* ---------- Accessibility: Minimum Font Sizes ---------- */
+body,
+p,
+span,
+div,
+li,
+td,
+th,
+label,
+input,
+select,
+textarea,
+button {
+    font-size: inherit;
+    line-height: 1.6;
+}
+
+/* Override any text-[9px] or text-[10px] classes with accessible minimums */
+[class*="text-\[9px\]"],
+[class*="text-\[10px\]"] {
+    font-size: 12px !important;
+    line-height: 1.5 !important;
+}
+
+/* ---------- Scrollbar ---------- */
+::-webkit-scrollbar {
+    width: 5px
+}
+
+::-webkit-scrollbar-track {
+    background: transparent
+}
+
+::-webkit-scrollbar-thumb {
+    background: #7c5cfc;
+    border-radius: 10px
+}
+
+/* ---------- Glass Card ---------- */
+.glass-card {
+    background: rgba(255, 255, 255, .8);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, .5);
+    box-shadow: 0 10px 30px -10px rgba(124, 92, 252, .08);
+    transition: all .4s cubic-bezier(.4, 0, .2, 1);
+}
+
+html.dark .glass-card {
+    background: rgba(30, 41, 59, .72);
+    border: 1px solid rgba(255, 255, 255, .1);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, .4);
+}
+
+/* ---------- Blob Decorations ---------- */
+.blob {
+    position: absolute;
+    filter: blur(70px);
+    z-index: -1;
+    opacity: .5;
+    pointer-events: none;
+    will-change: transform;
+}
+
+html.dark .blob {
+    opacity: .15
+}
+
+/* ---------- Animations ---------- */
+@keyframes ns-float {
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(0)
+    }
+
+    50% {
+        transform: translateY(-18px) rotate(1.5deg)
+    }
+}
+
+@keyframes ns-fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(18px)
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0)
+    }
+}
+
+@keyframes ns-pulse {
+
+    0%,
+    100% {
+        opacity: 1
+    }
+
+    50% {
+        opacity: .55
+    }
+}
+
+.animate-ns-float {
+    animation: ns-float 6s ease-in-out infinite
+}
+
+.animate-ns-fadeUp {
+    animation: ns-fadeUp .5s ease-out forwards
+}
+
+.animate-ns-pulse {
+    animation: ns-pulse 3s ease-in-out infinite
+}
+
+/* ---------- Reveal on Scroll ---------- */
+.reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: all .55s ease-out
+}
+
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0)
+}
+
+/* ---------- Nav compact on scroll ---------- */
+.nav-compact {
+    padding-top: .4rem !important;
+    padding-bottom: .4rem !important;
+    background: rgba(255, 255, 255, .92) !important;
+    border-radius: 1.25rem !important;
+    margin-top: .25rem !important;
+}
+
+html.dark .nav-compact {
+    background: rgba(15, 23, 42, .92) !important
+}
+
+/* ---------- Tab buttons ---------- */
+.tab-btn.active {
+    background: linear-gradient(135deg, #7c5cfc, #a78bfa);
+    color: #fff;
+    box-shadow: 0 10px 20px -5px rgba(124, 92, 252, .45);
+}
+
+/* ---------- Resource/Solution card hover ---------- */
+.resource-card,
+.solution-item {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: all .3s ease;
+}
+
+.resource-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent, rgba(255, 255, 255, .08), transparent);
+    transform: translateX(-100%);
+    transition: .55s;
+}
+
+@media(min-width:1024px) {
+    .resource-card:hover::after {
+        transform: translateX(100%)
+    }
+
+    .resource-card:hover {
+        transform: translateY(-5px);
+        border-color: #7c5cfc
+    }
+}
+
+.solution-item:hover {
+    transform: translateX(8px)
+}
+
+/* ---------- Primary accent utilities ---------- */
+.text-accent {
+    color: #7c5cfc
+}
+
+.bg-accent {
+    background: #7c5cfc
+}
+
+.border-accent {
+    border-color: #7c5cfc
+}
+
+.bg-accent-soft {
+    background: rgba(124, 92, 252, .1)
+}
+
+html.dark .bg-accent-soft {
+    background: rgba(124, 92, 252, .2)
+}
+
+/* ---------- Hero Gradient ---------- */
+.hero-gradient {
+    background: linear-gradient(135deg, #7c5cfc 0%, #a78bfa 50%, #c084fc 100%)
+}
+
+/* ---------- Custom focus ---------- */
+:focus-visible {
+    outline: 2px solid #7c5cfc;
+    outline-offset: 2px;
+    border-radius: 4px
+}
+
+/* ---------- Chat scrollbar ---------- */
+#ai-response::-webkit-scrollbar {
+    width: 4px
+}
+
+#ai-response::-webkit-scrollbar-thumb {
+    background: #7c5cfc;
+    border-radius: 10px
+}
+
+/* ---------- Study Music Player ---------- */
+.ns-music-player {
+    position: fixed;
+    bottom: 6rem;
+    left: 1rem;
+    z-index: 55;
+    width: 280px;
+    max-width: calc(100vw - 2rem);
+    transition: all .3s ease;
+}
+
+.ns-music-player.collapsed {
+    width: 48px;
+}
+
+.ns-music-player .player-body {
+    background: rgba(255, 255, 255, .92);
+    backdrop-filter: blur(18px);
+    border-radius: 1.25rem;
+    border: 1px solid rgba(124, 92, 252, .15);
+    box-shadow: 0 10px 30px -10px rgba(124, 92, 252, .2);
+    overflow: hidden;
+    transition: all .3s ease;
+}
+
+html.dark .ns-music-player .player-body {
+    background: rgba(30, 41, 59, .9);
+    border: 1px solid rgba(255, 255, 255, .1);
+}
+
+.ns-music-player .track-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ns-music-player .player-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: all .2s ease;
+    background: transparent;
+    color: #7c5cfc;
+    font-size: 18px;
+}
+
+.ns-music-player .player-btn:hover {
+    background: rgba(124, 92, 252, .1);
+    transform: scale(1.1);
+}
+
+.ns-music-player .player-btn.play-btn {
+    background: linear-gradient(135deg, #7c5cfc, #a78bfa);
+    color: #fff;
+    width: 42px;
+    height: 42px;
+    box-shadow: 0 4px 12px rgba(124, 92, 252, .35);
+}
+
+.ns-music-player .player-btn.play-btn:hover {
+    background: linear-gradient(135deg, #6b4ce0, #9b7bf8);
+    transform: scale(1.1);
+}
+
+.ns-music-player .volume-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 60px;
+    height: 4px;
+    border-radius: 2px;
+    background: #e2e8f0;
+    outline: none;
+    cursor: pointer;
+}
+
+html.dark .ns-music-player .volume-slider {
+    background: #334155
+}
+
+.ns-music-player .volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #7c5cfc;
+    cursor: pointer;
+}
+
+.ns-music-player .volume-slider::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border: none;
+    border-radius: 50%;
+    background: #7c5cfc;
+    cursor: pointer;
+}
+
+@keyframes ns-eq-bar {
+
+    0%,
+    100% {
+        height: 4px
+    }
+
+    50% {
+        height: 14px
+    }
+}
+
+.eq-bar {
+    width: 3px;
+    border-radius: 2px;
+    background: #7c5cfc;
+    display: inline-block;
+    animation: ns-eq-bar .6s ease-in-out infinite;
+}
+
+.eq-bar:nth-child(2) {
+    animation-delay: .15s
+}
+
+.eq-bar:nth-child(3) {
+    animation-delay: .3s
+}
+
+/* ---------- Chatbot file upload ---------- */
+.chatbot-upload-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: .75rem;
+    background: rgba(124, 92, 252, .1);
+    color: #7c5cfc;
+    border: none;
+    cursor: pointer;
+    transition: all .2s;
+    font-size: 18px;
+}
+
+.chatbot-upload-btn:hover {
+    background: rgba(124, 92, 252, .2);
+    transform: scale(1.05)
+}
+
+.chatbot-file-preview {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: 12px;
+    background: rgba(124, 92, 252, .08);
+    border: 1px solid rgba(124, 92, 252, .15);
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 6px;
+}
+
+.chatbot-file-preview .remove-file {
+    cursor: pointer;
+    color: #ef4444;
+    font-size: 14px;
+    margin-left: auto;
+    transition: transform .2s;
+}
+
+.chatbot-file-preview .remove-file:hover {
+    transform: scale(1.2)
+}
+
+/* ---------- Print Utilities ---------- */
+@media print {
+
+    .no-print,
+    .ns-music-player {
+        display: none !important
+    }
+
+    body {
+        background: #fff !important;
+        color: #000 !important
+    }
+
+    .glass-card {
+        background: #fff !important;
+        box-shadow: none !important;
+        border: 1px solid #ddd !important
+    }
+}
